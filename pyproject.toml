@@ -4,5 +4,9 @@ version = "0.1.0"
 description = "Hardware CI/CD Demo"
 dependencies = [
     "cocotb<2.0",
-    "pytest"
+    "pytest",
+    "cocotb-test"
 ]
+
+[tool.setuptools]
+py-modules = []
