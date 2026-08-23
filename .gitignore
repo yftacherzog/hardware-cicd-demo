@@ -15,6 +15,7 @@ results.xml
 .venv/
 venv/
 env/
+*.egg-info/
 
 # 5. Python Cache
 __pycache__/
