@@ -28,14 +28,34 @@ jobs:
 
       - name: Install Python Framework (Cocotb)
         run: |
-          # Pinning to <2.0 to match the Ubuntu apt repository's Verilator version
           python -m pip install --upgrade pip
-          pip install "cocotb<2.0" pytest
+          pip install .
 
       - name: Run Hardware Simulation
         run: |
           # This executes the Makefile, exactly as you did locally
           make
+
+      - name: Check Test Results
+        if: always()
+        run: |
+          python -c "
+          import xml.etree.ElementTree as ET
+          tree = ET.parse('results.xml')
+          root = tree.getroot()
+
+          # Search for any failure or error tags anywhere in the XML tree
+          failures = root.findall('.//failure')
+          errors = root.findall('.//error')
+
+          total_issues = len(failures) + len(errors)
+          print(f'Total test failures/errors found: {total_issues}')
+
+          if total_issues > 0:
+              exit(1)
+          else:
+              exit(0)
+          "
 
       - name: Archive Waveforms and Test Results
         uses: actions/upload-artifact@v4
