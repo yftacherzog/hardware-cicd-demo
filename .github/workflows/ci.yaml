@@ -58,7 +58,7 @@ jobs:
           "
 
       - name: Archive Waveforms and Test Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always() # Ensure artifacts are saved even if the test fails
         with:
           name: alu-simulation-artifacts
