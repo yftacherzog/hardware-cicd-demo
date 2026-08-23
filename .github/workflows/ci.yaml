@@ -1,0 +1,48 @@
+name: Hardware Verification CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  simulate:
+    name: Run ALU Simulation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip' # Speeds up subsequent runs by caching dependencies
+
+      - name: Install System Dependencies (Verilator)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y verilator make g++
+
+      - name: Install Python Framework (Cocotb)
+        run: |
+          # Pinning to <2.0 to match the Ubuntu apt repository's Verilator version
+          python -m pip install --upgrade pip
+          pip install "cocotb<2.0" pytest
+
+      - name: Run Hardware Simulation
+        run: |
+          # This executes the Makefile, exactly as you did locally
+          make
+
+      - name: Archive Waveforms and Test Results
+        uses: actions/upload-artifact@v4
+        if: always() # Ensure artifacts are saved even if the test fails
+        with:
+          name: alu-simulation-artifacts
+          path: |
+            dump.vcd
+            results.xml
+          retention-days: 7
