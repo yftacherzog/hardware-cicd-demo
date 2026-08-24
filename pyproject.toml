@@ -10,3 +10,7 @@ dependencies = [
 
 [tool.setuptools]
 py-modules = []
+
+[tool.pytest.ini_options]
+# Only collect runner files as Pytest entrypoints
+python_files = ["*_runner.py"]

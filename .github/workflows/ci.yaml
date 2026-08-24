@@ -8,7 +8,7 @@ on:
 
 jobs:
   simulate:
-    name: Run ALU Simulation
+    name: Run Hardware Verification Suites
     runs-on: ubuntu-latest
 
     steps:
@@ -21,10 +21,10 @@ jobs:
           python-version: '3.12'
           cache: 'pip'
 
-      - name: Install System Dependencies (Verilator)
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y verilator make g++
+          sudo apt-get install -y verilator make g++ zlib1g-dev
 
       - name: Install Python Package and Dependencies
         run: |
@@ -35,14 +35,16 @@ jobs:
         env:
           SIM: verilator
         run: |
-          pytest test_alu_runner.py -v
+          pytest -v
 
       - name: Archive Waveforms and Test Results
         uses: actions/upload-artifact@v7
-        if: always() # Captures dump.vcd even if tests fail
+        if: always()
         with:
-          name: alu-simulation-artifacts
+          name: simulation-artifacts
           path: |
-            sim_build/*.vcd
+            sim_build*/
+            *.vcd
+            *.fst
             results.xml
           retention-days: 7
